@@ -1,4 +1,5 @@
 // https://cs50.harvard.edu/x/psets/1/mario/less/
+#include <cs50.h>
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -9,14 +10,9 @@ int main(void)
     bool is_continue;
     do {
         is_continue = false;
-        printf("Height:");
-        ret = scanf("%d", &height);
-        if (ret != 1) {
-            printf("INVALID INPUT!");
-            is_continue = true;
-        }
-        if (height < 0) {
-            printf("NOT VALID NUMBER!");
+        height = get_int("Height:");
+        if (height == INT_MAX || height < 0) {
+            printf("INVALID INPUT! TRY AGAIN.");
             is_continue = true;
         }
     } while (is_continue);

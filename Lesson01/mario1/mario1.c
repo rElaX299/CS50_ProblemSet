@@ -3,19 +3,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+bool is_valid_input(int height);
+
 int main(void)
 {
     int height;
-    int ret;
-    bool is_continue;
+
     do {
-        is_continue = false;
         height = get_int("Height:");
-        if (height == INT_MAX || height < 0) {
-            printf("INVALID INPUT! TRY AGAIN.");
-            is_continue = true;
-        }
-    } while (is_continue);
+    } while (is_valid_input(height));
     
     for (int i = 0; i < height; i++) {
         for (int j = i; j < height - 1; j++) {
@@ -26,4 +22,13 @@ int main(void)
         }
         printf("\n");
     }
+}
+
+bool is_valid_input(int height)
+{
+    if (height == INT_MAX)
+        return false;
+    if (height <= 0 || height > 8)
+        return false;
+    return true;
 }

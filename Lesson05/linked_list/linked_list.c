@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SUCCESS 0
-#define ERROR   1
+#define SUCCESS     0
+#define ERROR       1
+#define NOT_FOUND   -1
 
 typedef struct node {
     int val;
@@ -17,6 +18,7 @@ typedef struct list {
 } list;
 
 int init_list(list *l, int capacity, int *init_val);
+void delete_list(list *l);
 int insert_num(list *l, int val);
 int delete_num(list *l, int val);
 int search_num(list *l, int val);
@@ -36,17 +38,17 @@ int main()
     int capacity = get_int("Capacity: ");
     int *init_val = malloc(capacity * sizeof(int));
     if (init_val == NULL) {
-        free(l);
+        delete_list(l);
         return ERROR;
     }
 
     for (int i = 0; i < capacity; i++) {
         init_val[i] = get_int("Number: ");
     }
-    
+
     ret = init_list(l, capacity, init_val);
     if (ret != SUCCESS) {
-        free(l);
+        delete_list(l);
         free(init_val);
         return ret;
     }
@@ -70,6 +72,15 @@ int main()
 
     int val = get_int("Delete Number: ");
     ret = delete_num(l, val);
+    if (ret == NOT_FOUND) {
+        printf("Not found.\n");
+    } else if (ret == SUCCESS) {
+        printf("Deleted.\n");
+    } else {
+        printf("Error: %d\n", ret);
+        free()
+        return ret;
+    }
     print_nodes(l->nodes);
 
     // val = get_int("Insert Number: ");
@@ -80,7 +91,7 @@ int main()
     free_nodes(l->nodes);
     free(l);
 
-    
+
     return SUCCESS;
 }
 
@@ -97,14 +108,28 @@ int init_list(list *l, int capacity, int *init_val)
         }
         new_node->val = init_val[i];
         new_node->next = NULL;
-        
+
         insert_node_at_head(&my_list, new_node);
     }
     l->nodes = my_list;
     l->capacity = capacity;
     l->size = capacity;
-    
+
     return SUCCESS;
+}
+
+void delete_list(list *l)
+{
+    if (l == NULL)
+        return;
+
+    if (l->nodes == NULL) {
+        free(l);
+        return;
+    }
+
+    free_nodes(l->nodes);
+    free(l);
 }
 
 int insert_num(list *l, int val)
@@ -158,6 +183,7 @@ int delete_num(list *l, int val)
     if (head->val == val) {
         l->nodes = head->next;
         free(head);
+        return SUCCESS;
     }
 
     for (node *ptr = head; ptr != NULL; ptr=ptr->next) {
@@ -165,10 +191,11 @@ int delete_num(list *l, int val)
             node *tmp = ptr;
             ptr = ptr->next;
             free(tmp);
+            return SUCCESS;
         }
     }
 
-    return SUCCESS;
+    return ERROR;
 }
 
 int search_num(list *l, int val)

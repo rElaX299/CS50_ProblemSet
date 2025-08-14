@@ -4,6 +4,8 @@
 #include <stdlib.h>
 
 
+/* Here assume enum has associated with string, maybe should use dict instead.
+   But it is hard to use dict in c, so why not just use Python. :) */ 
 typedef enum {
     TYPE_AMEX =       0,
     TYPE_MASTERCARD = 1,
@@ -42,7 +44,7 @@ int main()
         return 0;
     }
 
-    char card_number_str[100];
+    char card_number_str[20];
     sprintf(card_number_str, "%ld", card_number);
 
     int prefix = 10 * (card_number_str[0] - '0') + (card_number_str[1] - '0');

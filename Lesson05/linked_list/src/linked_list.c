@@ -13,123 +13,140 @@ const char *hint = "Please input operation:\n"   \
                     "0. Quit.\n"                  \
                     "Operation: ";
 
-int init_my_list(list *l)
+list* init_my_list()
 {
     int ret;
-    l = malloc(sizeof(list));
+    list *l = malloc(sizeof(list));
     if (l == NULL) {
-        return ERROR;
+        return NULL;
     }
 
     int capacity = get_int("Capacity: ");
-    int *init_val = malloc(capacity * sizeof(int));
-    if (init_val == NULL) {
-        delete_list(l);
-        return ERROR;
-    }
 
-    for (int i = 0; i < capacity; i++) {
-        init_val[i] = get_int("Number: ");
-    }
-
-    ret = init_list(l, capacity, init_val);
+    ret = init_list(l, capacity);
     if (ret != SUCCESS) {
-        delete_list(l);
-        free(init_val);
-        return ret;
+        free(l);
+        return NULL;
     }
-    free(init_val);
 
     print_nodes(l->nodes);
-    return SUCCESS;
+    return l;
 }
 
 
-void delete_my_list(list *l)
+int delete_my_list(list *l)
 {
-    free_nodes(l->nodes);
-    free(l);
+    int ret = delete_list(l);
+    if (ret == SUCCESS) {
+        printf("DELETE: delete success.");
+        return SUCCESS;
+    }
+    return ERROR;
 }
 
 int insert_num_in_my_list(list *l)
 {
     int val = get_int("Insert Number: ");
     int ret = insert_num(l, val);
+    if (ret == SUCCESS) {
+        printf("INSERT: insert success.\n");
+    }
+    if (ret == ERROR) {
+        printf("INSERT: ERROR.\n");
+        return ERROR;
+    }
+    if (ret == RET_LIST_FULL) {
+        printf("INSERT: list is full.\n");
+    }
     print_nodes(l->nodes);
-    return ret;
+    return SUCCESS;
 }
 
 int delete_num_in_my_list(list *l)
 {
     int val = get_int("Delete Number: ");
     int ret = delete_num(l, val);
-    if (ret == NOT_FOUND) {
-        printf("Not found.\n");
-    } else if (ret == SUCCESS) {
-        printf("Deleted.\n");
-    } else {
-        printf("Error: %d\n", ret);
-        delete_list(l);
+    if (ret == SUCCESS) {
+        printf("DELETE: delete success.\n");
     }
-    return ret;
+    if (ret == RET_NUM_NOT_FOUND) {
+        printf("DELETE: val not found.\n");
+    }
+    if (ret == RET_LIST_EMPTY) {
+        printf("DELETE: list is empty.\n");
+    }
+
+    print_nodes(l->nodes);
+    return SUCCESS;
 }
 
 int search_num_in_my_list(list *l)
 {
     int val = get_int("Search Number: ");
     int ret = search_num(l, val);
-    if (ret > 0) {
-        printf("Find at %d pos.\n", ret);
+    if (ret == RET_NUM_NOT_FOUND) {
+        printf("SEARCH: not found.\n");
     } else {
-        printf("Not found.\n");
+        printf("SEARCH: find at %d pos.\n", ret);
     }
     print_nodes(l->nodes);
-    return ret;
+    return SUCCESS;
 }
 
+typedef enum {
+    OP_INSERT = 1,
+    OP_DELETE = 2,
+    OP_SEARCH = 3,
+    OP_RESIZE = 4,
+    OP_QUIT   = 0
+} OP;
 
 int execute_operation(list *l, int op)
 {
     int ret = SUCCESS;
     switch (op)
     {
-    case 0:
-        /* code */
-        delete_my_list(l);
-        break;
-    case 1:
-        /* code */
+    case OP_INSERT:
         ret = insert_num_in_my_list(l);
         break;
-    case 2:
-        /* code */
+    case OP_DELETE:
         ret = delete_num_in_my_list(l);
         break;
-    case 3:
+    case OP_SEARCH:
         ret = search_num_in_my_list(l);
-        /* code */
+        break;
+    case OP_QUIT:
+        ret = delete_my_list(l);
         break;
     default:
         break;
     }
-    return ret;
+    if (ret != SUCCESS) {
+        if (l == NULL) {
+            return ERROR;
+        }
+        delete_my_list(l);
+        return ERROR;
+    }
+    return SUCCESS;
 }
 
 int main()
 {
     int ret;
-    list *l = NULL;
-    ret = init_my_list(l);
-    if (ret != SUCCESS) {
-        return ret;
+    list *l = init_my_list();
+    if (l == NULL) {
+        return ERROR;
     }
 
     int op;
     do {
         op = get_int("\n%s", hint);
         ret = execute_operation(l, op);
-
-    } while (op != 0);
+        if (ret != SUCCESS) {
+            return ERROR;
+        }
+    } while (op != OP_QUIT);
     
     return SUCCESS;
 }

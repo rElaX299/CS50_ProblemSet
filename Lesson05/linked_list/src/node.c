@@ -1,11 +1,5 @@
 #include <node.h>
 
-void insert_node_at_head(node **head, node *target)
-{
-    node *ptr = *head;
-    *head = target;
-    (*head)->next = ptr;
-}
 
 void print_nodes(node *head)
 {

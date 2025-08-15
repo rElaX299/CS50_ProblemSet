@@ -1,63 +1,65 @@
 #include <list.h>
 
-int init_list(list *l, int capacity, int *init_val)
+int init_list(list *l, int capacity)
 {
-    node *my_list = NULL;
-
-    for (int i = 0; i < capacity; i++) {
-        // init tmp node n
-        node *new_node = malloc(sizeof(node));
-        if (new_node == NULL) {
-            free_nodes(my_list);
-            return ERROR;
-        }
-        new_node->val = init_val[i];
-        new_node->next = NULL;
-
-        insert_node_at_head(&my_list, new_node);
+    if (l == NULL) {
+        return ERROR;
     }
-    l->nodes = my_list;
+    l->nodes = NULL;
     l->capacity = capacity;
-    l->size = capacity;
-
+    l->size = 0;
     return SUCCESS;
 }
 
-void delete_list(list *l)
+int resize_list(list *l, int capacity)
+{
+    if (l == NULL || l->size > capacity) {
+        return ERROR;
+    }
+    l->capacity = capacity;
+    return SUCCESS;
+}
+
+int delete_list(list *l)
 {
     if (l == NULL)
-        return;
+        return ERROR;
 
     if (l->nodes == NULL) {
         free(l);
-        return;
+        return SUCCESS;
     }
 
     free_nodes(l->nodes);
     free(l);
+    return SUCCESS;
 }
 
 int insert_num(list *l, int val)
 {
     if (l->capacity == l->size) {
-        l->capacity += 1;
+        goto LIST_FULL_EXIT;
     }
-    l->size += 1;
-
+    
     // Create new node
     node *new_node = malloc(sizeof(node));
     if (new_node == NULL) {
-        return ERROR;
+        goto ERROR_EXIT;
     }
     new_node->val = val;
     new_node->next = NULL;
 
     node *head = l->nodes;
+    // First num
+    if (head == NULL) {
+        l->nodes = new_node;
+        goto SUCCESS_EXIT;
+    }
     // At head
     if (new_node->val > head->val) {
-        insert_node_at_head(&head, new_node);
-        l->nodes = head;
-        return SUCCESS;
+        new_node->next = head;
+        l->nodes = new_node;
+        goto SUCCESS_EXIT;
     }
     for (node *ptr = head; ptr != NULL; ptr=ptr->next) {
         // At tail
@@ -73,34 +75,62 @@ int insert_num(list *l, int val)
             break;
         }
     }
+    goto SUCCESS_EXIT;
 
+    SUCCESS_EXIT:
+    l->size += 1;
     return SUCCESS;
+
+    LIST_FULL_EXIT:
+    return RET_LIST_FULL;
+    
+    ERROR_EXIT:
+    return ERROR;
 }
 
 int delete_num(list *l, int val)
 {
     if (l->size == 0) {
-        return ERROR;
+        goto LIST_EMPTY_EXIT;
     }
-    l->size -= 1;
+    
 
     node *head = l->nodes;
+    // At head
     if (head->val == val) {
         l->nodes = head->next;
         free(head);
-        return SUCCESS;
+        goto SUCCESS_EXIT;
     }
 
-    for (node *ptr = head; ptr != NULL; ptr=ptr->next) {
-        if (ptr->val == val) {
-            node *tmp = ptr;
-            ptr = ptr->next;
+    // Here use ptr->next->next cause we can only delete ptr->next and then connect ptr and ptr->next->next.
+    // If use ptr itself, we can connect ptr->prev and ptr->next.
+    for (node *ptr = head; ptr->next != NULL; ptr=ptr->next) {
+        if (ptr->next->val == val) {
+            // At tail
+            if (ptr->next->next == NULL) {
+                free(ptr->next);
+                ptr->next = NULL;
+                goto SUCCESS_EXIT;
+            }
+            node *tmp = ptr->next;
+            ptr->next = ptr->next->next;
             free(tmp);
-            return SUCCESS;
+            goto SUCCESS_EXIT;
         }
     }
 
-    return ERROR;
+    goto NOT_FOUND_EXIT;
+
+    SUCCESS_EXIT:
+    l->size -= 1;
+    return SUCCESS;
+
+    LIST_EMPTY_EXIT:
+    return RET_LIST_EMPTY;
+
+    NOT_FOUND_EXIT:
+    return RET_NUM_NOT_FOUND;
 }
 
 int search_num(list *l, int val)
@@ -113,5 +143,5 @@ int search_num(list *l, int val)
             return pos;
         }
     }
-    return -1;
+    return RET_NUM_NOT_FOUND;
 }

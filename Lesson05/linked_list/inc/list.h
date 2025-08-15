@@ -14,8 +14,9 @@ typedef struct list {
     node *nodes;
 } list;
 
-int init_list(list *l, int capacity, int *init_val);
-void delete_list(list *l);
+int init_list(list *l, int capacity);
+int resize_list(list *l, int capacity);
+int delete_list(list *l);
 int insert_num(list *l, int val);
 int delete_num(list *l, int val);
 int search_num(list *l, int val);

@@ -11,7 +11,6 @@ typedef struct node {
     struct node *next;
 } node;
 
-void insert_node_at_head(node **head, node *target);
 void free_nodes(node *head);
 void print_nodes(node *head);
 

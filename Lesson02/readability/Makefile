@@ -11,6 +11,6 @@ SRC_FILES_1 := readability.c
 
 all: $(TARGET_1)
 
-$(TARGET_1): $(files)
+$(TARGET_1): $(SRC_FILES_1)
 	mkdir -p $(OUTPUT_PATH)
 	cc $(SRC_FILES_1) -g -o $(OUTPUT_TARGET_1) -I $(INC_DIRS) -L $(LIB_DIRS) -l$(LIB)

@@ -9,6 +9,7 @@ void insert_node_at_head(node **head, node *target)
 
 void print_nodes(node *head)
 {
+    printf("Current list: ");
     for (node *ptr = head; ptr != NULL; ptr = ptr->next) {
         printf("%d ", ptr->val);
     }

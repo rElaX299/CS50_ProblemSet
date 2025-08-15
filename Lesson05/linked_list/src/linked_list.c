@@ -1,15 +1,22 @@
 #include <cs50.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <common.h>
 #include <list.h>
 
+const char *hint = "Please input operation:\n"   \
+                    "1. Insert a number.\n"       \
+                    "2. Delete a number.\n"       \
+                    "3. Search a number.\n"       \
+                    "0. Quit.\n"                  \
+                    "Operation: ";
 
-int main()
+int init_my_list(list *l)
 {
     int ret;
-    list *l = malloc(sizeof(list));
+    l = malloc(sizeof(list));
     if (l == NULL) {
         return ERROR;
     }
@@ -34,23 +41,28 @@ int main()
     free(init_val);
 
     print_nodes(l->nodes);
-
-    // int val = get_int("Insert Number: ");
-    // ret = insert_num(l, val);
-    // print_nodes(l->nodes);
+    return SUCCESS;
+}
 
 
-    // val = get_int("Search Number: ");
-    // ret = search_num(l, val);
-    // if (ret > 0) {
-    //     printf("Find at %d pos.\n", ret);
-    // } else {
-    //     printf("Not found.\n");
-    // }
-    // print_nodes(l->nodes);
+void delete_my_list(list *l)
+{
+    free_nodes(l->nodes);
+    free(l);
+}
 
+int insert_num_in_my_list(list *l)
+{
+    int val = get_int("Insert Number: ");
+    int ret = insert_num(l, val);
+    print_nodes(l->nodes);
+    return ret;
+}
+
+int delete_num_in_my_list(list *l)
+{
     int val = get_int("Delete Number: ");
-    ret = delete_num(l, val);
+    int ret = delete_num(l, val);
     if (ret == NOT_FOUND) {
         printf("Not found.\n");
     } else if (ret == SUCCESS) {
@@ -58,18 +70,66 @@ int main()
     } else {
         printf("Error: %d\n", ret);
         delete_list(l);
-        return ret;
+    }
+    return ret;
+}
+
+int search_num_in_my_list(list *l)
+{
+    int val = get_int("Search Number: ");
+    int ret = search_num(l, val);
+    if (ret > 0) {
+        printf("Find at %d pos.\n", ret);
+    } else {
+        printf("Not found.\n");
     }
     print_nodes(l->nodes);
-
-    // val = get_int("Insert Number: ");
-    // ret = insert_num(l, val);
-    // print_nodes(l->nodes);
+    return ret;
+}
 
 
-    free_nodes(l->nodes);
-    free(l);
+int execute_operation(list *l, int op)
+{
+    int ret = SUCCESS;
+    switch (op)
+    {
+    case 0:
+        /* code */
+        delete_my_list(l);
+        break;
+    case 1:
+        /* code */
+        ret = insert_num_in_my_list(l);
+        break;
+    case 2:
+        /* code */
+        ret = delete_num_in_my_list(l);
+        break;
+    case 3:
+        ret = search_num_in_my_list(l);
+        /* code */
+        break;
+    default:
+        break;
+    }
+    return ret;
+}
 
+int main()
+{
+    int ret;
+    list *l = NULL;
+    ret = init_my_list(l);
+    if (ret != SUCCESS) {
+        return ret;
+    }
 
+    int op;
+    do {
+        op = get_int("\n%s", hint);
+        ret = execute_operation(l, op);
+
+    } while (op != 0);
+    
     return SUCCESS;
 }

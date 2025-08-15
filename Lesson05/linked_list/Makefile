@@ -18,15 +18,15 @@ SRC = $(wildcard $(LOCAL_SRC_PATH)/*.c)
 # 把SRC里面的.c文件替换为.o文件
 OBJ = $(patsubst %.c, %.o,$(SRC))
 
-CLAGS = -c -Wall -I$(INC_DIRS) -I$(LOCAL_INC_PATH) -I$(LOCAL_COMMON_PATH)
+CLAGS = -c -g -Wall -I$(INC_DIRS) -I$(LOCAL_INC_PATH) -I$(LOCAL_COMMON_PATH)
  
 $(TARGET): $(OBJ)
 	mkdir -p $(OUTPUT_PATH) 
-	$(CC) -o $(OUTPUT_PATH)/$@ $^ -L $(LIB_DIRS) -l$(LIB)
+	$(CC) -o $(OUTPUT_PATH)/$@ $^ -L$(LIB_DIRS) -l$(LIB)
  
 %.o: %.c
 	$(CC) $(CLAGS) $< -o $@ 
  
 .PHONY: clean
 clean:
-	rm -f *.o $(TARGET)
+	rm -f $(LOCAL_SRC_PATH)/*.o $(OUTPUT_PATH)/$(TARGET)

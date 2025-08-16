@@ -1,3 +1,4 @@
+OS := $(shell uname)
 CC := gcc
 TARGET := linked_list
 
@@ -19,14 +20,20 @@ SRC = $(wildcard $(LOCAL_SRC_PATH)/*.c)
 OBJ = $(patsubst %.c, %.o,$(SRC))
 
 CLAGS = -c -g -Wall -I$(INC_DIRS) -I$(LOCAL_INC_PATH) -I$(LOCAL_COMMON_PATH)
- 
+
 $(TARGET): $(OBJ)
-	mkdir -p $(OUTPUT_PATH) 
+	mkdir -p $(OUTPUT_PATH)
+ifeq ($(OS),Darwin)
+	cp $(LIB_DIRS)/lib$(LIB)* $(OUTPUT_PATH)
+endif
 	$(CC) -o $(OUTPUT_PATH)/$@ $^ -L$(LIB_DIRS) -l$(LIB)
- 
+
 %.o: %.c
-	$(CC) $(CLAGS) $< -o $@ 
- 
+	$(CC) $(CLAGS) $< -o $@
+
 .PHONY: clean
 clean:
 	rm -f $(LOCAL_SRC_PATH)/*.o $(OUTPUT_PATH)/$(TARGET)
+ifeq ($(OS),Darwin)
+	rm $(OUTPUT_PATH)/lib$(LIB)*
+endif

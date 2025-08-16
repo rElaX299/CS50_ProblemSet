@@ -1,0 +1,4 @@
+CompileFlags:
+  Add:
+    - "-I/Users/rex/FileManger/200_Code/CS50_ProblemSet/Lesson05/linked_list/inc"
+    - "-I/Users/rex/FileManger/200_Code/CS50_ProblemSet/Lesson05/linked_list/common"

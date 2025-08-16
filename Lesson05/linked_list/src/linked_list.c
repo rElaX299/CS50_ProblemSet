@@ -38,7 +38,7 @@ int delete_my_list(list *l)
 {
     int ret = delete_list(l);
     if (ret == SUCCESS) {
-        printf("DELETE: delete success.");
+        printf("DELETE: delete success.\n");
         return SUCCESS;
     }
     return ERROR;
@@ -147,6 +147,6 @@ int main()
             return ERROR;
         }
     } while (op != OP_QUIT);
-    
+
     return SUCCESS;
 }

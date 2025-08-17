@@ -1,74 +1,82 @@
 // https://cs50.harvard.edu/x/psets/3/plurality/
 
 #include <cs50.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
+#define MAX_CANDIDATE_CNT 9
+
 typedef struct {
     char *name;
-    int ticket;
+    int votes;
 } candidate;
+
+candidate g_candidates[MAX_CANDIDATE_CNT];
+
+bool vote(char *name);
+void print_winner();
 
 int main(int argc, char *argv[])
 {
-    if (argc == 1) {
-        printf("Usage: plurality [candidate ...]\n");
-        return 0;
-    }
-
     // preprocess
     int candidates_num = argc - 1;
-    candidate *candidates = malloc(candidates_num * sizeof(candidate));
-    if (candidates == NULL) {
-        return 1;
+    if (candidates_num > MAX_CANDIDATE_CNT) {
+        printf("Max candidate count is %d\n", MAX_CANDIDATE_CNT);
+        return 2;
     }
-    memset(candidates, 0, candidates_num * sizeof(candidate));
-
-    for (int i = 1; i < argc; i++) {
-        char *name = argv[i];
-        int name_len = strlen(name);
-
-        char *name_copy = malloc(sizeof(char) * (name_len + 1));
-        if (name_copy == NULL) {
-            // error process;
-        }
-        strcpy(name_copy, name);
-        candidates[i - 1].name = name_copy;
+    if (candidates_num == 0) {
+        printf("Usage: plurality [candidate ...]\n");
+        return 2;
     }
 
-    // vate
+    memset(g_candidates, 0, MAX_CANDIDATE_CNT * sizeof(candidate));
+
+    for (int i = 1; i < argc; i++)
+        g_candidates[i - 1].name = argv[i];
+
+    // vote
     int votes_num = get_int("Number of voters: ");
-    int num = 0;
+    if (votes_num == INT_MAX)
+        return -1;
     do {
-        int pos = -1;
-        char *tmp = get_string("Vote:");
-        for (int j = 0; j < candidates_num; j++) {
-            if (strcmp(tmp, candidates[j].name) == 0) {
-                pos = j;
-                break;
-            }
-        }
-        if (pos == -1) {
+        char *name = get_string("Vote:");
+        if (name == NULL)
+            return -1;
+        
+        if (!vote(name)) {
             printf("Invalid vote!\n");
-        } else {
-            candidates[pos].ticket += 1;
+            return 1;
         }
-        num++;
-    } while (num < votes_num);
+    } while (votes_num--);
 
-    int max = -1;
-    for (int i = 0; i < candidates_num; i++) {
-        if (max < candidates[i].ticket) {
-            max = candidates[i].ticket;
-        }
-    }
-
-    for (int i = 0; i < candidates_num; i++) {
-        if (max == candidates[i].ticket) {
-            printf("%s\n", candidates[i].name);
-        }
-    }
+    print_winner();
 
     return 0;
+}
+
+bool vote(char *name)
+{
+    for (int i = 0; i < MAX_CANDIDATE_CNT && g_candidates[i].name != NULL; i++) {
+        if (strcmp(name, g_candidates[i].name) == 0) {
+            g_candidates[i].votes++;
+            return true;
+        }
+    }
+    return false;
+}
+
+void print_winner()
+{
+    int max = -1;
+    for (int i = 0; i < MAX_CANDIDATE_CNT && g_candidates[i].name != NULL; i++) {
+        if (max < g_candidates[i].votes)
+            max = g_candidates[i].votes;
+    }
+
+    for (int i = 0; i < MAX_CANDIDATE_CNT && g_candidates[i].name != NULL; i++) {
+        if (max == g_candidates[i].votes)
+            printf("%s\n", g_candidates[i].name);
+    }    
 }

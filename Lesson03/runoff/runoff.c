@@ -17,17 +17,18 @@ struct candidate {
 
 struct candidate g_candidates[MAX_CANDIDATE_CNT];
 
+int check_valid(int candidates_num);
+
+void update_candidates_name(int cnt, char *name[]);
 int parse_ticket();
 bool vote(char *name, int rank);
-void print_winner();
+
+void elect_winner(int standard);
 void update_current_rank_votes(int *vote_cnt, int rank);
 void print_winner_info(int *vote_cnt, int max);
 int get_min_votes(int *vote_cnt);
 int get_max_votes(int *vote_cnt);
-void print_winner_info(int *vote_cnt, int max);
 void eliminate_candidate(int *vote_cnt, int min);
-int check_valid(int candidates_num);
-void update_candidates_name(int cnt, char *name[]);
 
 int main(int argc, char *argv[])
 {
@@ -49,7 +50,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    print_winner((votes_num + 1)/ 2);
+    int win_standard = (votes_num + 1)/ 2;
+    elect_winner(win_standard);
 
     return 0;
 }
@@ -77,8 +79,7 @@ void update_candidates_name(int cnt, char *name[])
 
 int parse_ticket()
 {
-    int rank = 0;
-    while (rank < MAX_RANK) {
+    for (int rank = 0; rank < MAX_RANK; rank++) {
         char *name = get_string("Rank %d:", rank + 1);
         if (name == NULL)
             return -1;
@@ -87,7 +88,6 @@ int parse_ticket()
             printf("Invalid vote!\n");
             return 1;
         }
-        rank++;
     }
     printf("\n");
     return 0;
@@ -104,23 +104,21 @@ bool vote(char *name, int rank)
     return false;
 }
 
-void print_winner(int base)
+void elect_winner(int standard)
 {
-    int rank = 0;
-    while (rank < MAX_CANDIDATE_CNT) {
+    for (int rank = 0; rank < MAX_RANK; rank++) {
         int vote_cnt[MAX_CANDIDATE_CNT] = {0};
         update_current_rank_votes(vote_cnt, rank);
 
         int max = get_max_votes(vote_cnt);
         int min = get_min_votes(vote_cnt);
 
-        if (max >= base) {
+        if (max >= standard) {
             print_winner_info(vote_cnt, max);
             return;
         }
 
         eliminate_candidate(vote_cnt, min);
-        rank++;
     }
 }
 

@@ -6,7 +6,7 @@
 
 
 /* Here assume enum has associated with string, maybe should use dict instead.
-   But it is hard to use dict in c, so why not just use Python. :) */ 
+   But it is hard to use dict in c, so why not just use Python. :) */
 typedef enum {
     TYPE_AMEX =       0,
     TYPE_MASTERCARD = 1,
@@ -25,7 +25,7 @@ const long MAX_VALID_CARD_NUMBER = 10000000000000000;
 const long MIN_VALID_CARD_NUMBER = 1000000000000;
 
 int get_credit_type(int prefix);
-bool is_valid_number(long card_number); 
+bool is_valid_number(long card_number);
 
 int main()
 {
@@ -59,32 +59,32 @@ int get_credit_type(int prefix)
 {
     switch (prefix)
     {
-        case 34:
-        case 37:
-            return TYPE_AMEX;
-            break;
-        case 22:
-        case 51:
-        case 52:
-        case 53:
-        case 54:
-        case 55:
-            return TYPE_MASTERCARD;
-            break;
-        case 40:
-        case 41:
-        case 42:
-        case 43:
-        case 44:
-        case 45:
-        case 46:
-        case 47:
-        case 48:
-        case 49:
-            return TYPE_VISA;
-            break;
-        default:
-            break;
+    case 34:
+    case 37:
+        return TYPE_AMEX;
+        break;
+    case 22:
+    case 51:
+    case 52:
+    case 53:
+    case 54:
+    case 55:
+        return TYPE_MASTERCARD;
+        break;
+    case 40:
+    case 41:
+    case 42:
+    case 43:
+    case 44:
+    case 45:
+    case 46:
+    case 47:
+    case 48:
+    case 49:
+        return TYPE_VISA;
+        break;
+    default:
+        break;
     }
     return TYPE_INVALID;
 }

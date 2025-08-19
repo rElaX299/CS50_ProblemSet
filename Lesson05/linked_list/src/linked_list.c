@@ -6,7 +6,7 @@
 #include <common.h>
 #include <list.h>
 
-const char *hint = "Please input operation:\n"   \
+const char *hint = "Please select operation:\n"   \
                     "1. Insert a number.\n"       \
                     "2. Delete a number.\n"       \
                     "3. Search a number.\n"       \
